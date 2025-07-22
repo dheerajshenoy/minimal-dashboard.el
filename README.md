@@ -21,12 +21,15 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
 ```elisp
 (use-package minimal-dashboard
-  :load-path "~/Gits/minimal-dashboard.el/"
-  :ensure nil
-  :custom
-  (minimal-dashboard-image-path "~/.config/emacs/logo.svg") ;; Replace with your own image path
-  (minimal-dashboard-text "Welcome to Emacs.") ;; text shown in the dashboard
-  (minimal-dashboard-enable-resize-handling t) ;; option to respect window resizing
-  :config
-  (setq initial-buffer-choice #'minimal-dashboard))
+    :load-path "<path-to-the-directory>"
+    :ensure nil
+    :custom
+    (minimal-dashboard-image-path "~/.config/emacs/logo.svg") ;; path to image
+    (minimal-dashboard-text "Welcome to Emacs") ;; plain text
+
+    ;; You can have function returning a string as well
+    ;; (minimal-dashboard-text (lambda () (format "started in %s" (emacs-init-time))))
+    (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
+    (minimal-dashboard-modeline-shown nil) ;; visibility of the modeline
+    (initial-buffer-choice #'minimal-dashboard)) ;; shown during startup
 ```
