@@ -92,6 +92,10 @@ Default image is the image provided by GNUS utility."
          (set-default symbol value)
          (setq minimal-dashboard--cached-image nil)))
 
+(defcustom minimal-dashboard-modeline-shown nil
+  "Visibility of the mode-line in the dashboard buffer."
+  :type 'boolean
+  :group 'minimal-dashboard)
 
 (defcustom minimal-dashboard-text "Welcome to Emacs."
   "Text displayed in the dashboard."
@@ -164,6 +168,8 @@ Default image is the image provided by GNUS utility."
         (minimal-dashboard--insert-centered-info)
         (setq mode-line-format nil)
         (view-mode -1)
+        (unless minimal-dashboard-modeline-shown
+          (setq-local mode-line-format nil))
         (setq-local cursor-type nil)
         (read-only-mode 1)
         (use-local-map minimal-dashboard-mode-map)
