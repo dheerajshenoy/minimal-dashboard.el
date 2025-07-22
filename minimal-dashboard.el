@@ -41,6 +41,13 @@
   :group 'applications
   :version "0.1")
 
+;;;; Faces
+
+(defface minimal-dashboard-text-face
+  '((t :inherit shadow))
+  "Face used for dashboard text."
+  :group 'minimal-dashboard)
+
 ;;;; Keymaps
 
 (defvar minimal-dashboard-mode-map
@@ -128,34 +135,39 @@ If it's a function, it should return a string."
           (minimal-dashboard--insert-centered-info))))))
 
 (defun minimal-dashboard--insert-centered-info ()
-  "Insert a centered image and text in the dashboard buffer."
+  "Insert a centered image and text in the dashboard buffer efficiently."
   (let* ((image (minimal-dashboard--get-cached-image))
          (image-size (when image (image-size image)))
          (img-height (or (cdr image-size) 0))
-         (img-width (or (car image-size) 0))
+         (img-width  (or (car image-size) 0))
          (text (minimal-dashboard--get-cached-text))
          (text-lines (and text (split-string text "\n")))
-         (text-max-width (apply #'max (mapcar #'length text-lines)))
+         (text-max-width (apply #'max 0 (mapcar #'string-width text-lines)))
          (win-h (window-height))
          (win-w (window-width))
-         ;; Vertical padding: if image exists, reserve 2 lines for text, else 0
+         ;; Vertical padding: if image exists, reserve 2 lines for text
          (vpad (max 0 (round (- win-h img-height (if text 2 0)) 2)))
-         (hpad-img (max 0 (round (- win-w img-width) 2))))
+         (hpad-img (max 0 (round (- win-w img-width) 2)))
+         (hpad-text (max 0 (round (- win-w text-max-width) 2))))
+
     ;; Vertical padding before image/text
     (insert-char ?\n vpad)
+
     ;; Insert image if available
     (when image
       (insert-char ?\s hpad-img)
       (insert-image image)
       (insert "\n\n"))
-    ;; Insert text if available
+
+    ;; Insert text lines if available
     (when text-lines
       (dolist (line text-lines)
-        (let ((hpad-line (max 0 (round (- win-w (length line)) 2))))
-          (insert-char ?\s hpad-line)
-          (insert line)
-          (insert "\n"))))
+        (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
+        (insert (propertize line 'face 'minimal-dashboard-text-face))
+        (insert "\n")))
+
     (goto-char (point-min))))
+
 
 ;;;; Main point of entry
 
