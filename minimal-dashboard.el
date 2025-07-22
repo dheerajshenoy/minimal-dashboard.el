@@ -151,10 +151,6 @@ Default image is the image provided by GNUS utility."
       (insert text))
     (goto-char (point-min))))
 
-
-
-
-
 ;;;; Main point of entry
 
 ;;;###autoload
@@ -163,11 +159,10 @@ Default image is the image provided by GNUS utility."
   (interactive)
   (let ((buf (get-buffer-create minimal-dashboard-buffer-name)))
     (with-current-buffer buf
-      (let ((inhibit-read-only t))
+      (let ((inhibit-read-only t)
+            (view-read-only nil)) ;; prevent view-mode activation
         (erase-buffer)
         (minimal-dashboard--insert-centered-info)
-        (setq mode-line-format nil)
-        (view-mode -1)
         (unless minimal-dashboard-modeline-shown
           (setq-local mode-line-format nil))
         (setq-local cursor-type nil)
@@ -184,7 +179,7 @@ Default image is the image provided by GNUS utility."
                       (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize))
                     nil t)))
       )
-      (switch-to-buffer buf)))
-
+    (switch-to-buffer buf)
+    buf))
 
 (provide 'minimal-dashboard)
