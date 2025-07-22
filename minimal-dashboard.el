@@ -62,6 +62,14 @@
   :group 'applications
   :version "0.1")
 
+;;;; Keymaps
+
+(defvar minimal-dashboard-mode-map
+  (let ((map (make-sparse-keymap)))
+    (keymap-set map "q" #'kill-current-buffer)
+    map)
+  "Keymap for `minimal-dashboard' buffer.")
+
 ;;;; Variables
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
@@ -158,6 +166,7 @@ Default image is the image provided by GNUS utility."
         (view-mode -1)
         (setq-local cursor-type nil)
         (read-only-mode 1)
+        (use-local-map minimal-dashboard-mode-map)
 
         (when minimal-dashboard-enable-resize-handling
           ;; Add hook once
