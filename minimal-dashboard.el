@@ -90,30 +90,53 @@ Default image is the image provided by GNUS utility."
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-image nil)))
+         (setq minimal-dashboard--cached-image (create-image value))))
 
 (defcustom minimal-dashboard-modeline-shown nil
   "Visibility of the mode-line in the dashboard buffer."
   :type 'boolean
   :group 'minimal-dashboard)
 
-(defcustom minimal-dashboard-text "Welcome to Emacs."
-  "Text displayed in the dashboard."
-  :type 'string
-  :group 'minimal-dashboard)
+(defcustom minimal-dashboard-text "Welcome to Emacs"
+  "Text displayed in the dashboard.
+
+If it's a string, it will be inserted directly.
+If it's a function, it should return a string."
+  :type '(choice
+          (string :tag "Static text")
+          (function :tag "Function returning text"))
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (setq minimal-dashboard--cached-text
+               (if (functionp minimal-dashboard-text)
+                   (funcall minimal-dashboard-text)
+              minimal-dashboard-text))))
 
 ;;;; Variables
 
 (defvar minimal-dashboard--cached-image nil
   "Cached minimal-dashboard image.")
 
+(defvar minimal-dashboard--cached-text nil
+  "Cached minimal-dashboard text.")
+
 ;;;; Helper functions
 
 (defun minimal-dashboard--get-cached-image ()
-  "Return the cached image, or create and cache it."
+  "Return the cached image, or create and cache it if it doesn't exist."
   (or minimal-dashboard--cached-image
       (setq minimal-dashboard--cached-image
             (create-image minimal-dashboard-image-path))))
+
+(defun minimal-dashboard--get-cached-text ()
+  "Return the cached text, or create and cache it if it doesn't exist."
+  (or minimal-dashboard--cached-text
+      (setq minimal-dashboard--cached-text
+            (if (functionp minimal-dashboard-text)
+                (funcall minimal-dashboard-text)
+              minimal-dashboard-text))))
+
 
 (defun minimal-dashboard--on-resize (frame)
   "Function that is called when buffer is resized."
@@ -130,7 +153,7 @@ Default image is the image provided by GNUS utility."
          (image-size (when image (image-size image)))
          (img-height (or (cdr image-size) 0))
          (img-width (or (car image-size) 0))
-         (text minimal-dashboard-text)
+         (text (minimal-dashboard--get-cached-text))
          (text-width (length text))
          (win-h (window-height))
          (win-w (window-width))
