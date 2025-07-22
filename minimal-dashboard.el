@@ -32,27 +32,6 @@
 ;; horizontally, and the layout is automatically re-centered when the
 ;; window is resized (this behaviour can be changed as well).
 
-;; Features:
-;; - Displays an image centered in the buffer.
-;; - Optional automatic re-centering on window resize via `window-size-change-functions`.
-;; - Automatically removes resize hook when the buffer is killed.
-;; - Disables text scaling and Ctrl+MouseWheel zooming in the dashboard buffer to
-;;   prevent layout disruption.
-;; - The buffer name and resize behavior can be customized via user-defined variables
-;;   or adjusted directly in the code.
-
-;; Customization options:
-;;
-;; - `minimal-dashboard-buffer-name` - Customize the buffer name.
-;; - `minimal-dashboard-image-path` - Path to the image (default uses a built-in GNUS SVG).
-;; - `minimal-dashboard-text` - Text to be displayed beneath the image.
-;; - `minimal-dashboard-enable-resize-handling` - Enable or disable resize responsiveness.
-;;
-
-;; To use:
-;; (load-file "/path/to/minimal-dashboard.el")
-;; (minimal-dashboard)
-
 
 ;;;; Group
 
