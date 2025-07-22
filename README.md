@@ -27,6 +27,10 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
     ;; You can have function returning a string as well
     ;; (minimal-dashboard-text (lambda () (format "started in %s" (emacs-init-time))))
+
+    ;; Multi-line text (with center alignment) is also supported
+    ;; (minimal-dashboard-text "My multiline\nstring is here")
+
     (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
     (minimal-dashboard-modeline-shown nil) ;; visibility of the modeline
     (initial-buffer-choice #'minimal-dashboard)) ;; shown during startup
@@ -43,6 +47,10 @@ Following customizable variables are present:
 - `minimal-dashboard-modeline-shown` - visibility of the modeline
 
 Use `M-x customize-group RET minimal-dashboard RET` to configure interactively.
+
+## Keybindings
+
+There's only one keybinding and that is `q` to quit the dashboard buffer.
 
 ## Why ?
 
