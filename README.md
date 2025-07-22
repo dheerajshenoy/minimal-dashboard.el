@@ -11,16 +11,20 @@ A very minimal dashboard plugin for Emacs — displays a centered image and mess
 
 ## Installation
 
-Clone this repository somewhere inside your Emacs `load-path`:
+1. Clone this repository somewhere inside your Emacs `load-path`:
 
 ```sh
 git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 ```
 
+2. Use VC or download and require manually
+
 ```elisp
 (use-package minimal-dashboard
-    :load-path "<path-to-the-directory>"
-    :ensure nil
+    :vc (minimal-dashboard :url "https://github.com/dheerajshenoy/minimal-dashboard.el")
+    ;; :load-path "<path-to-cloned-directory>" ;; uncomment this line if you have downloaded and don't want to use VC
+    :init
+    (setq initial-buffer-choice #'minimal-dashboard) ;; set initial buffer as dashboard
     :custom
     (minimal-dashboard-image-path "~/.config/emacs/logo.svg") ;; path to image
     (minimal-dashboard-text "Welcome to Emacs") ;; plain text
@@ -32,8 +36,8 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
     ;; (minimal-dashboard-text "My multiline\nstring is here")
 
     (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
-    (minimal-dashboard-modeline-shown nil) ;; visibility of the modeline
-    (initial-buffer-choice #'minimal-dashboard)) ;; shown during startup
+    (minimal-dashboard-modeline-shown nil)) ;; visibility of the modeline
+
 ```
 
 ## Customization
