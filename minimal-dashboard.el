@@ -109,9 +109,10 @@ If it's a function, it should return a string."
   :set (lambda (symbol value)
          (set-default symbol value)
          (setq minimal-dashboard--cached-text
-               (if (functionp minimal-dashboard-text)
-                   (funcall minimal-dashboard-text)
-              minimal-dashboard-text))))
+               (if (functionp value)
+                   (funcall value)
+                 value))))
+
 
 ;;;; Variables
 
@@ -154,13 +155,13 @@ If it's a function, it should return a string."
          (img-height (or (cdr image-size) 0))
          (img-width (or (car image-size) 0))
          (text (minimal-dashboard--get-cached-text))
-         (text-width (length text))
+         (text-lines (and text (split-string text "\n")))
+         (text-max-width (apply #'max (mapcar #'length text-lines)))
          (win-h (window-height))
          (win-w (window-width))
          ;; Vertical padding: if image exists, reserve 2 lines for text, else 0
          (vpad (max 0 (round (- win-h img-height (if text 2 0)) 2)))
-         (hpad-img (max 0 (round (- win-w img-width) 2)))
-         (hpad-text (max 0 (round (- win-w text-width) 2))))
+         (hpad-img (max 0 (round (- win-w img-width) 2))))
     ;; Vertical padding before image/text
     (insert-char ?\n vpad)
     ;; Insert image if available
@@ -169,9 +170,12 @@ If it's a function, it should return a string."
       (insert-image image)
       (insert "\n\n"))
     ;; Insert text if available
-    (when text
-      (insert-char ?\s hpad-text)
-      (insert text))
+    (when text-lines
+      (dolist (line text-lines)
+        (let ((hpad-line (max 0 (round (- win-w (length line)) 2))))
+          (insert-char ?\s hpad-line)
+          (insert line)
+          (insert "\n"))))
     (goto-char (point-min))))
 
 ;;;; Main point of entry
