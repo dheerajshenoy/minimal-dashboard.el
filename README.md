@@ -2,14 +2,12 @@
 
 A very minimal dashboard plugin for Emacs — displays a centered image and message when Emacs starts, with optional window resize responsiveness and layout control.
 
-![screenshot](screenshot.png) <!-- Optional: Add screenshot.png to your repo -->
+![screenshot](screenshot.png)
 
 ## Features
 
-- Centered image and text display.
-- Optional automatic re-centering on window resize.
-- Customizable buffer name, image path, message text, and resize behavior.
-- Automatically removes window-size-change hook when the buffer is killed.
+- Minimal dashboard
+- Automatic re-centering on window resize. (OPTIONAL)
 
 ## Installation
 
@@ -33,3 +31,19 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
     (minimal-dashboard-modeline-shown nil) ;; visibility of the modeline
     (initial-buffer-choice #'minimal-dashboard)) ;; shown during startup
 ```
+
+## Customization
+
+Following customizable variables are present:
+
+- `minimal-dashboard-buffer-name` - name of the dashboard buffer.
+- `minimal-dashboard-image-path` - path to the image to display (SVG, PNG, etc).
+- `minimal-dashboard-text` - text displayed below the image.
+- `minimal-dashboard-enable-resize-handling` -  re-center layout on window resize.
+- `minimal-dashboard-modeline-shown` - visibility of the modeline
+
+Use `M-x customize-group RET minimal-dashboard RET` to configure interactively.
+
+## Why ?
+
+Wanted to learn elisp and wanted a clean and minimal dashboard during startup :)
