@@ -70,12 +70,15 @@
 (defcustom minimal-dashboard-image-path (expand-file-name "images/gnus/gnus.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
-Default image is the image provided by GNUS utility."
+Default image is the image provided by GNUS utility. If nil, no image is
+displayed."
   :type 'string
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-image (create-image value))))
+         (setq minimal-dashboard--cached-image
+               (when (and value (stringp value))
+                 (create-image value)))))
 
 (defcustom minimal-dashboard-modeline-shown nil
   "Visibility of the mode-line in the dashboard buffer."
@@ -112,8 +115,10 @@ If it's a function, it should return a string."
 (defun minimal-dashboard--get-cached-image ()
   "Return the cached image, or create and cache it if it doesn't exist."
   (or minimal-dashboard--cached-image
-      (setq minimal-dashboard--cached-image
-            (create-image minimal-dashboard-image-path))))
+      (when (and minimal-dashboard-image-path
+                 (stringp minimal-dashboard-image-path))
+        (setq minimal-dashboard--cached-image
+              (create-image minimal-dashboard-image-path)))))
 
 (defun minimal-dashboard--get-cached-text ()
   "Return the cached text, or create and cache it if it doesn't exist."
@@ -136,36 +141,37 @@ If it's a function, it should return a string."
 (defun minimal-dashboard--insert-centered-info ()
   "Insert a centered image and text in the dashboard buffer efficiently."
   (let* ((image (minimal-dashboard--get-cached-image))
-         (image-size (when image (image-size image)))
-         (img-height (or (cdr image-size) 0))
-         (img-width  (or (car image-size) 0))
+         (image-size (if image (image-size image) '(0 . 0)))
+         (img-width (car image-size))
+         (img-height (cdr image-size))
          (text (minimal-dashboard--get-cached-text))
-         (text-lines (and text (split-string text "\n")))
+         (text-lines (when (stringp text) (split-string text "\n")))
          (text-max-width (apply #'max 0 (mapcar #'string-width text-lines)))
          (win-h (window-height))
-         (win-w (window-width))
-         ;; Vertical padding: if image exists, reserve 2 lines for text
-         (vpad (max 0 (round (- win-h img-height (if text 2 0)) 2)))
-         (hpad-img (max 0 (round (- win-w img-width) 2)))
-         (hpad-text (max 0 (round (- win-w text-max-width) 2))))
+         (win-w (window-width)))
 
-    ;; Vertical padding before image/text
-    (insert-char ?\n vpad)
+    (let* ((vpad (max 0 (round (- win-h img-height (if text-lines 2 0)) 2)))
+           (hpad-img (max 0 (round (- win-w img-width) 2)))
+           (hpad-text (max 0 (round (- win-w text-max-width) 2))))
 
-    ;; Insert image if available
-    (when image
-      (insert-char ?\s hpad-img)
-      (insert-image image)
-      (insert "\n\n"))
+      ;; Vertical padding before image/text
+      (insert-char ?\n vpad)
 
-    ;; Insert text lines if available
-    (when text-lines
-      (dolist (line text-lines)
-        (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
-        (insert (propertize line 'face 'minimal-dashboard-text-face))
-        (insert "\n")))
+      ;; Insert image if available
+      (when image
+        (insert-char ?\s hpad-img)
+        (insert-image image)
+        (insert "\n\n"))
 
-    (goto-char (point-min))))
+      ;; Insert text lines if available
+      (when text-lines
+        (dolist (line text-lines)
+          (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
+          (insert (propertize line 'face 'minimal-dashboard-text-face))
+          (insert "\n")))))
+
+  (goto-char (point-min)))
+
 
 
 ;;;; Main point of entry
