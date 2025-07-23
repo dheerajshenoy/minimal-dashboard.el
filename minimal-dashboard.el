@@ -67,11 +67,10 @@
   :type 'boolean
   :group 'minimal-dashboard)
 
-(defcustom minimal-dashboard-image-path (expand-file-name "images/gnus/gnus.svg" data-directory)
+(defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
-Default image is the image provided by GNUS utility. If nil, no image is
-displayed."
+By default we use the splash emacs image. If nil, no image is displayed."
   :type 'string
   :group 'minimal-dashboard
   :set (lambda (symbol value)
