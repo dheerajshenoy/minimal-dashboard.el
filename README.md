@@ -33,7 +33,13 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
     :init
     (setq initial-buffer-choice #'minimal-dashboard) ;; set initial buffer as dashboard
     :custom
+
+    (minimal-dashboard-buffer-name "Dashboard")
+    ;; (minimal-dashboard-buffer-name #'some-func-that-returns-a-string)
+
     (minimal-dashboard-image-path "~/.config/emacs/logo.svg") ;; path to image
+    ;; (minimal-dashboard-image-path #'some-func-that-returns-a-valid-image-path)
+
     (minimal-dashboard-text "Welcome to Emacs") ;; plain text
 
     ;; You can have function returning a string as well
@@ -48,6 +54,12 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
 > [!NOTE]
 > By default, the image used is the splash screen image and the default text is "Welcome to Emacs"
+
+## Note
+
+> [!NOTE]
+> `minimal-dashboard-buffer-name`, `minimal-dashboard-image-path`, `minimal-dashboard-text`
+> takes a string or a function that returns a string
 
 ## Customization
 

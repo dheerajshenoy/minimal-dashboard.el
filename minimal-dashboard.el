@@ -94,12 +94,24 @@
     ;; Disable
     (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize)))
 
+(defun minimal-dashboard--refresh-buffer-name ()
+  "Set the dashboard name."
+  (setq minimal-dashboard-buffer-name
+        (if (functionp minimal-dashboard-buffer-name)
+            (funcall minimal-dashboard-buffer-name)
+          minimal-dashboard-buffer-name)))
+
 ;;;; Variables
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
   "Name of the minimal-dashboard buffer."
-  :type 'string
-  :group 'minimal-dashboard)
+  :type '(choice
+          (string :tag "Path to image")
+          (function :tag "Function returning a path to an image"))
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (minimal-dashboard--refresh-buffer-name)))
 
 (defcustom minimal-dashboard-enable-resize-handling t
   "If non-nil, re-center information in dashboard buffer when window is resized."
@@ -222,7 +234,7 @@ If it's a function, it should return a string."
 (defun minimal-dashboard ()
   "Show dashboard with image, set up hooks."
   (interactive)
-  (let ((buf (get-buffer-create minimal-dashboard-buffer-name)))
+  (let ((buf (get-buffer-create (minimal-dashboard--refresh-buffer-name))))
     (with-current-buffer buf
       (let ((inhibit-read-only t)
             (view-read-only nil)) ;; prevent view-mode activation
