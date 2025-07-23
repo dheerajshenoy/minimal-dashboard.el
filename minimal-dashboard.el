@@ -5,7 +5,6 @@
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Version: 0.1
-;; Package-Requires: ((emacs "29"))
 ;; Keywords: dashboard, minimal
 ;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
 
