@@ -286,9 +286,10 @@ Example:
   "Show dashboard with image, set up hooks."
   (interactive)
   (let ((buf (get-buffer-create (minimal-dashboard--refresh-buffer-name))))
+    (delete-other-windows)
     (with-current-buffer buf
       (let ((inhibit-read-only t)
-            (view-read-only nil)) ;; prevent view-mode activation
+            (view-read-only nil))
         (erase-buffer)
         (minimal-dashboard--insert-centered-info)
         (unless minimal-dashboard-modeline-shown
