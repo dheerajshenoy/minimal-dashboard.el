@@ -56,6 +56,15 @@
     map)
   "Keymap for `minimal-dashboard' buffer.")
 
+;;;; Forward declaration of variable
+
+(defvar minimal-dashboard-image-path)
+(defvar minimal-dashboard-dashboard-text)
+(defvar minimal-dashboard--cached-image)
+(defvar minimal-dashboard--cached-text)
+(defvar minimal-dashboard-enable-resize-handling)
+(defvar minimal-dashboard-buffer-name)
+
 ;;;; Variable setters
 
 ;;; These functions serve dual purpose and avoid redundancy. These are
