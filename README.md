@@ -1,7 +1,11 @@
 # minimal-dashboard.el
 
-A very minimal dashboard plugin for Emacs — displays a centered image and message when Emacs starts,
-with optional window resize responsiveness and layout control.
+A very minimal dashboard plugin for Emacs — displays a centered image
+and message when Emacs starts, with optional window resize
+responsiveness and layout control.
+
+The use case is for those who do not want to see anything else on the
+screen apart from the emacs logo and/or a small text blurb.
 
 Version: 0.1.2
 
