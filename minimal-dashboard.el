@@ -5,7 +5,8 @@
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Version: 0.1.2
-;; Keywords: dashboard, minimal
+;; Package-Requires: ((emacs "27.1"))
+;; Keywords: startup, screen, tools, dashboard
 ;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
 
 ;; This file is NOT part of GNU Emacs.
@@ -25,11 +26,11 @@
 
 ;;; Commentary:
 
-;; This is a minimal Emacs dashboard implementation that displays
-;; minimal amount of information like image and text, which are of
-;; course customizable. The image is centered both vertically and
-;; horizontally, and the layout is automatically re-centered when the
-;; window is resized (this behaviour can be changed as well).
+;; A very minimal dashboard plugin for Emacs — displays a centered
+;; image and message when Emacs starts, with optional window resize
+;; responsiveness and layout control.
+
+
 
 
 ;;;; Group
@@ -307,11 +308,10 @@ Example:
                     minimal-dashboard--buffer-p t)
         (setq buffer-read-only t)
         (use-local-map minimal-dashboard-mode-map)
-        (minimal-dashboard--resize-handler)
-      )
+        (minimal-dashboard--resize-handler))
     (switch-to-buffer buf)
     buf)))
 
 (provide 'minimal-dashboard)
 
-;; minimal-dashboard.el ends here
+;;; minimal-dashboard.el ends here
