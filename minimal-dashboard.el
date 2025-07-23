@@ -1,4 +1,4 @@
-;; minimal-dashboard.el --- A very minimal dashboard plugin for emacs -*- lexical-binding: t; -*-
+;;; minimal-dashboard.el --- A very minimal dashboard plugin for emacs -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Free Software Foundation, Inc.
 
