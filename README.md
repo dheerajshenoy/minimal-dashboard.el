@@ -3,6 +3,8 @@
 A very minimal dashboard plugin for Emacs — displays a centered image and message when Emacs starts,
 with optional window resize responsiveness and layout control.
 
+Version: 0.1.2
+
 ![screenshot](screenshot.png)
 
 Respects window resizing
@@ -66,3 +68,6 @@ There's only one keybinding and that is `q` to quit the dashboard buffer.
 ## Why ?
 
 Wanted to learn elisp and wanted a clean and minimal dashboard during startup :)
+## CHANGELOG
+
+Check [CHANGELOG](./CHANGELOG.md)

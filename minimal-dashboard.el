@@ -4,7 +4,7 @@
 
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: dashboard, minimal
 ;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
 
@@ -55,6 +55,45 @@
     map)
   "Keymap for `minimal-dashboard' buffer.")
 
+;;;; Variable setters
+
+;;; These functions serve dual purpose and avoid redundancy. These are
+;;; called when creating the dashboard and are also used to update and
+;;; refresh the behavior when setting a config option.
+
+(defun minimal-dashboard--refresh-cached-image ()
+  "Setter for use with `defcustom' for updating the cached image."
+  (setq minimal-dashboard--cached-image
+        (if (functionp minimal-dashboard-image-path)
+            (let ((path (funcall minimal-dashboard-image-path)))
+              (when path
+                (create-image path)))
+          (create-image minimal-dashboard-image-path))))
+
+(defun minimal-dashboard--refresh-cached-text ()
+  "Setter for use with `defcustom' for updating the cached text."
+  (setq minimal-dashboard--cached-text
+        (if (functionp minimal-dashboard-text)
+            (funcall minimal-dashboard-text)
+          minimal-dashboard-text)))
+
+(defun minimal-dashboard--resize-handler ()
+  "Resizing updating handler."
+  (if minimal-dashboard-enable-resize-handling
+
+      ;; Enable
+      (unless (member #'minimal-dashboard--on-resize window-size-change-functions)
+        (add-hook 'window-size-change-functions #'minimal-dashboard--on-resize)
+
+        ;; Disable ok kill
+        (add-hook 'kill-buffer-hook
+                  (lambda ()
+                    (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize))
+                  nil t))
+
+    ;; Disable
+    (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize)))
+
 ;;;; Variables
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
@@ -65,19 +104,24 @@
 (defcustom minimal-dashboard-enable-resize-handling t
   "If non-nil, re-center information in dashboard buffer when window is resized."
   :type 'boolean
-  :group 'minimal-dashboard)
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (minimal-dashboard--resize-handler)))
+
+
 
 (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
 By default we use the splash emacs image. If nil, no image is displayed."
-  :type 'string
+  :type '(choice
+          (string :tag "Path to image")
+          (function :tag "Function returning a path to an image"))
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-image
-               (when (and value (stringp value))
-                 (create-image value)))))
+         (minimal-dashboard--refresh-cached-image)))
 
 (defcustom minimal-dashboard-modeline-shown nil
   "Visibility of the mode-line in the dashboard buffer."
@@ -95,10 +139,8 @@ If it's a function, it should return a string."
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-text
-               (if (functionp value)
-                   (funcall value)
-                 value))))
+         (minimal-dashboard--refresh-cached-text)))
+
 
 
 ;;;; Variables
@@ -131,11 +173,12 @@ If it's a function, it should return a string."
 (defun minimal-dashboard--on-resize (frame)
   "Function that is called when buffer is resized."
   (dolist (window (window-list frame))
-    (when (string= (buffer-name (window-buffer window)) minimal-dashboard-buffer-name)
-      (with-selected-window window
-        (let ((inhibit-read-only t))
-          (erase-buffer)
-          (minimal-dashboard--insert-centered-info))))))
+    (let ((buf (window-buffer window)))
+      (when (buffer-local-value 'minimal-dashboard--buffer-p buf)
+        (with-selected-window window
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (minimal-dashboard--insert-centered-info)))))))
 
 (defun minimal-dashboard--insert-centered-info ()
   "Insert a centered image and text in the dashboard buffer efficiently."
@@ -187,21 +230,13 @@ If it's a function, it should return a string."
         (minimal-dashboard--insert-centered-info)
         (unless minimal-dashboard-modeline-shown
           (setq-local mode-line-format nil))
-        (setq-local cursor-type nil)
+        (setq-local cursor-type nil
+                    minimal-dashboard--buffer-p t)
         (read-only-mode 1)
         (use-local-map minimal-dashboard-mode-map)
-
-        (when minimal-dashboard-enable-resize-handling
-          ;; Add hook once
-          (unless (member #'minimal-dashboard--on-resize window-size-change-functions)
-            (add-hook 'window-size-change-functions #'minimal-dashboard--on-resize))
-          ;; Clean up hook on buffer kill
-          (add-hook 'kill-buffer-hook
-                    (lambda ()
-                      (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize))
-                    nil t)))
+        (minimal-dashboard--resize-handler)
       )
     (switch-to-buffer buf)
-    buf))
+    buf)))
 
 (provide 'minimal-dashboard)
