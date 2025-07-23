@@ -64,6 +64,7 @@
 (defvar minimal-dashboard--cached-text)
 (defvar minimal-dashboard-enable-resize-handling)
 (defvar minimal-dashboard-buffer-name)
+(defvar minimal-dashboard-text)
 
 ;;;; Variable setters
 
