@@ -34,6 +34,7 @@
 
 ;;;; Group
 
+;;;###autoload
 (defgroup minimal-dashboard nil
   "Group for minimal-dashboard"
   :prefix "minimal-dashboard-"
@@ -166,15 +167,15 @@ If it's a function, it should return a string."
   "Function to call when the dashboard image is clicked.
 
 Supports mouse button 1 (left button), 2 (right button) and 3 (middle
-button). The function is called with the 'mouse-event' argument.
+button). The function is called with the event argument.
 
 Example:
 (setq minimal-dashboard-image-click-handler
       (lambda (event)
         (pcase (event-basic-type event)
-          ('mouse-1 (message \"Left click on image\"))
-          ('mouse-2 (message \"Middle click on image\"))
-          ('mouse-3 (message \"Right click on image\")))))."
+          ('mouse-1 function1)
+          ('mouse-2 function2)
+          ('mouse-3 function3))))"
   :type 'function
   :group 'minimal-dashboard)
 
@@ -182,7 +183,7 @@ Example:
   "Function to call when the dashboard image is clicked.
 
 Supports mouse button 1 (left button), 2 (right button) and 3 (middle
-button). The function is called with the 'mouse-event' argument.
+button). The function is called with the event argument.
 
 Example:
 (setq minimal-dashboard-text-click-handler
@@ -243,8 +244,7 @@ Example:
          (win-w (window-width)))
 
     (let* ((vpad (max 0 (round (- win-h img-height (if text-lines 2 0)) 2)))
-           (hpad-img (max 0 (round (- win-w img-width) 2)))
-           (hpad-text (max 0 (round (- win-w text-max-width) 2))))
+           (hpad-img (max 0 (round (- win-w img-width) 2))))
 
       ;; Vertical padding before image/text
       (insert-char ?\n vpad)
@@ -296,7 +296,7 @@ Example:
           (setq-local mode-line-format nil))
         (setq-local cursor-type nil
                     minimal-dashboard--buffer-p t)
-        (read-only-mode 1)
+        (setq buffer-read-only t)
         (use-local-map minimal-dashboard-mode-map)
         (minimal-dashboard--resize-handler)
       )
@@ -304,3 +304,5 @@ Example:
     buf)))
 
 (provide 'minimal-dashboard)
+
+;; minimal-dashboard.el ends here
