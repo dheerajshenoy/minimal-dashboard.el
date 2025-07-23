@@ -41,7 +41,7 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 ```
 
 > [!NOTE]
-> By default, the image used is provided by GNUS and the default text is "Welcome to Emacs"
+> By default, the image used is the splash screen image and the default text is "Welcome to Emacs"
 
 ## Customization
 
