@@ -239,7 +239,6 @@ Example:
          (img-height (cdr image-size))
          (text (minimal-dashboard--get-cached-text))
          (text-lines (when (stringp text) (split-string text "\n")))
-         (text-max-width (apply #'max 0 (mapcar #'string-width text-lines)))
          (win-h (window-height))
          (win-w (window-width)))
 
