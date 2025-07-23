@@ -4,7 +4,7 @@
 
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
-;; Version: 0.1
+;; Version: 0.1.1
 ;; Keywords: dashboard, minimal
 ;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
 
