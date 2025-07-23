@@ -1,6 +1,7 @@
 # minimal-dashboard.el
 
-A very minimal dashboard plugin for Emacs — displays a centered image and message when Emacs starts, with optional window resize responsiveness and layout control.
+A very minimal dashboard plugin for Emacs — displays a centered image and message when Emacs starts,
+with optional window resize responsiveness and layout control.
 
 ![screenshot](screenshot.png)
 
@@ -37,8 +38,10 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
     (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
     (minimal-dashboard-modeline-shown nil)) ;; visibility of the modeline
-
 ```
+
+> [!NOTE]
+> By default, the image used is provided by GNUS and the default text is "Welcome to Emacs"
 
 ## Customization
 
