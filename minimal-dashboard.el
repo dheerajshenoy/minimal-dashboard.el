@@ -35,9 +35,11 @@
 
 ;;;; Group
 
+;;; Code:
+
 ;;;###autoload
 (defgroup minimal-dashboard nil
-  "Group for minimal-dashboard"
+  "Group for `minimal-dashboard'."
   :prefix "minimal-dashboard-"
   :group 'applications
   :version "0.1")
@@ -114,7 +116,7 @@
           minimal-dashboard-buffer-name)))
 
 (defun minimal-dashboard--build-mouse-map (handler)
-  "Return a keymap for mouse-1/2/3 if HANDLER is non-nil."
+  "Return a keymap for mouse buttons if HANDLER is non-nil."
   (when handler
     (let ((map (make-sparse-keymap)))
       (dolist (btn '(mouse-1 mouse-2 mouse-3))
@@ -127,7 +129,7 @@
 ;;;; Variables
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
-  "Name of the minimal-dashboard buffer."
+  "Name of the `minimal-dashboard' buffer."
   :type '(choice
           (string :tag "Path to image")
           (function :tag "Function returning a path to an image"))
@@ -147,7 +149,7 @@
 (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
-By default we use the splash emacs image. If nil, no image is displayed."
+By default we use the splash Emacs image. If nil, no image is displayed."
   :type '(choice
           (string :tag "Path to image")
           (function :tag "Function returning a path to an image"))
@@ -177,42 +179,46 @@ If it's a function, it should return a string."
 (defcustom minimal-dashboard-image-click-handler nil
   "Function to call when the dashboard image is clicked.
 
-Supports mouse button 1 (left button), 2 (right button) and 3 (middle
-button). The function is called with the event argument.
+Supports `mouse-1` (left button), `mouse-2` (middle button) and
+`mouse-3` (right button). The function is called with the event
+argument.
 
-Example:
-(setq minimal-dashboard-image-click-handler
+Example usage:
+
+\(setq `minimal-dashboard-image-click-handler'
       (lambda (event)
         (pcase (event-basic-type event)
-          ('mouse-1 function1)
-          ('mouse-2 function2)
-          ('mouse-3 function3))))"
+          (`mouse-1 function1)
+          (`mouse-2 function2)
+          (`mouse-3 function3))))"
   :type 'function
   :group 'minimal-dashboard)
 
 (defcustom minimal-dashboard-text-click-handler nil
   "Function to call when the dashboard image is clicked.
 
-Supports mouse button 1 (left button), 2 (right button) and 3 (middle
-button). The function is called with the event argument.
+Supports `mouse-1` (left button), `mouse-2` (middle button) and
+`mouse-3` (right button). The function is called with the event
+argument.
 
-Example:
-(setq minimal-dashboard-text-click-handler
+Example usage:
+
+\(setq `minimal-dashboard-text-click-handler'
       (lambda (event)
         (pcase (event-basic-type event)
-          ('mouse-1 (message \"Left click on text\"))
-          ('mouse-2 (message \"Middle click on text\"))
-          ('mouse-3 (message \"Right click on text\")))))."
+          (`mouse-1 function1)
+          (`mouse-2 function2)
+          (`mouse-3 function3))))"
   :type 'function
   :group 'minimal-dashboard)
 
 ;;;; Variables
 
 (defvar minimal-dashboard--cached-image nil
-  "Cached minimal-dashboard image.")
+  "Cached `minimal-dashboard' image.")
 
 (defvar minimal-dashboard--cached-text nil
-  "Cached minimal-dashboard text.")
+  "Cached `minimal-dashboard' text.")
 
 ;;;; Helper functions
 
@@ -233,7 +239,8 @@ Example:
               minimal-dashboard-text))))
 
 (defun minimal-dashboard--on-resize (frame)
-  "Function that is called when buffer is resized."
+  "Function that is called when buffer is resized.
+Argument FRAME the dashboard frame."
   (dolist (window (window-list frame))
     (let ((buf (window-buffer window)))
       (when (buffer-local-value 'minimal-dashboard--buffer-p buf)
