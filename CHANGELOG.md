@@ -3,6 +3,7 @@
 ## 0.1.2
 
 - Allow function/string for image-path
+- Mouse button click callback on text and image
 
 ## 0.1.1
 

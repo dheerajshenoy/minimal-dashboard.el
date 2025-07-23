@@ -101,6 +101,17 @@
             (funcall minimal-dashboard-buffer-name)
           minimal-dashboard-buffer-name)))
 
+(defun minimal-dashboard--build-mouse-map (handler)
+  "Return a keymap for mouse-1/2/3 if HANDLER is non-nil."
+  (when handler
+    (let ((map (make-sparse-keymap)))
+      (dolist (btn '(mouse-1 mouse-2 mouse-3))
+        (define-key map (vector btn)
+                    `(lambda (event)
+                       (interactive "e")
+                       (funcall ,handler event))))
+      map)))
+
 ;;;; Variables
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
@@ -120,8 +131,6 @@
   :set (lambda (symbol value)
          (set-default symbol value)
          (minimal-dashboard--resize-handler)))
-
-
 
 (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
@@ -153,7 +162,37 @@ If it's a function, it should return a string."
          (set-default symbol value)
          (minimal-dashboard--refresh-cached-text)))
 
+(defcustom minimal-dashboard-image-click-handler nil
+  "Function to call when the dashboard image is clicked.
 
+Supports mouse button 1 (left button), 2 (right button) and 3 (middle
+button). The function is called with the 'mouse-event' argument.
+
+Example:
+(setq minimal-dashboard-image-click-handler
+      (lambda (event)
+        (pcase (event-basic-type event)
+          ('mouse-1 (message \"Left click on image\"))
+          ('mouse-2 (message \"Middle click on image\"))
+          ('mouse-3 (message \"Right click on image\")))))."
+  :type 'function
+  :group 'minimal-dashboard)
+
+(defcustom minimal-dashboard-text-click-handler nil
+  "Function to call when the dashboard image is clicked.
+
+Supports mouse button 1 (left button), 2 (right button) and 3 (middle
+button). The function is called with the 'mouse-event' argument.
+
+Example:
+(setq minimal-dashboard-text-click-handler
+      (lambda (event)
+        (pcase (event-basic-type event)
+          ('mouse-1 (message \"Left click on text\"))
+          ('mouse-2 (message \"Middle click on text\"))
+          ('mouse-3 (message \"Right click on text\")))))."
+  :type 'function
+  :group 'minimal-dashboard)
 
 ;;;; Variables
 
@@ -180,7 +219,6 @@ If it's a function, it should return a string."
             (if (functionp minimal-dashboard-text)
                 (funcall minimal-dashboard-text)
               minimal-dashboard-text))))
-
 
 (defun minimal-dashboard--on-resize (frame)
   "Function that is called when buffer is resized."
@@ -214,19 +252,32 @@ If it's a function, it should return a string."
       ;; Insert image if available
       (when image
         (insert-char ?\s hpad-img)
-        (insert-image image)
+        (if minimal-dashboard-image-click-handler
+            (insert (propertize " " 'display image
+                                'mouse-face 'highlight
+                                'keymap
+                                (minimal-dashboard--build-mouse-map
+                                 minimal-dashboard-image-click-handler)))
+          (insert-image image))
         (insert "\n\n"))
 
       ;; Insert text lines if available
       (when text-lines
-        (dolist (line text-lines)
-          (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
-          (insert (propertize line 'face 'minimal-dashboard-text-face))
-          (insert "\n")))))
-
+        (if minimal-dashboard-text-click-handler
+            (dolist (line text-lines)
+              (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
+              (insert (propertize " " 'display line
+                                  'face 'minimal-dashboard-text
+                                  'mouse-face 'highlight
+                                  'keymap
+                                  (minimal-dashboard--build-mouse-map
+                                   minimal-dashboard-text-click-handler)))
+              (insert "\n"))
+          (dolist (line text-lines)
+            (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
+            (insert (propertize line 'face 'minimal-dashboard-text-face))
+            (insert "\n"))))))
   (goto-char (point-min)))
-
-
 
 ;;;; Main point of entry
 

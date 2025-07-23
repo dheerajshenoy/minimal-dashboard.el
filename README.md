@@ -14,7 +14,8 @@ Respects window resizing
 ## Features
 
 - Minimal dashboard
-- Automatic re-centering on window resize. (OPTIONAL)
+- Automatic re-centering on window resize (OPTIONAL)
+- Mouse click custom callback image and text (OPTIONAL)
 
 ## Installation
 
@@ -47,6 +48,22 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
     ;; Multi-line text (with center alignment) is also supported
     ;; (minimal-dashboard-text "My multiline\nstring is here")
+
+    ;; Click support for image
+    ;; (minimal-dashboard-image-click-handler
+    ;;   (lambda (event)
+    ;;     (pcase (event-basic-type event)
+    ;;       ('mouse-1 (message "Left click on image"))
+    ;;       ('mouse-2 (message "Middle click on image"))
+    ;;       ('mouse-3 (message "Right click on image")))))
+
+    ;; Click support for text
+    ;; (minimal-dashboard-text-click-handler
+    ;;   (lambda (event)
+    ;;     (pcase (event-basic-type event)
+    ;;       ('mouse-1 (message "Left click on text"))
+    ;;       ('mouse-2 (message "Middle click on text"))
+    ;;       ('mouse-3 (message "Right click on text")))))
 
     (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
     (minimal-dashboard-modeline-shown nil)) ;; visibility of the modeline
