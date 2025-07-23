@@ -4,10 +4,12 @@
 
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
+;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
 ;; Version: 0.1.2
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: startup, screen, tools, dashboard
-;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
+
+
 
 ;; This file is NOT part of GNU Emacs.
 
