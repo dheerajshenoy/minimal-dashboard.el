@@ -5,6 +5,10 @@ with optional window resize responsiveness and layout control.
 
 ![screenshot](screenshot.png)
 
+Respects window resizing
+
+![window-resizing](resizing.gif)
+
 ## Features
 
 - Minimal dashboard
