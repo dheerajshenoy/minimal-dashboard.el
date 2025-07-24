@@ -79,8 +79,8 @@
   (setq minimal-dashboard--cached-image
         (if (functionp minimal-dashboard-image-path)
             (when-let* (path (funcall minimal-dashboard-image-path))
-                (create-image path)))
-          (create-image minimal-dashboard-image-path)))
+                (create-image path))
+          (create-image minimal-dashboard-image-path))))
 
 (defun minimal-dashboard--refresh-cached-text ()
   "Setter for use with `defcustom' for updating the cached text."
