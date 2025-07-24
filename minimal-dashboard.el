@@ -10,9 +10,7 @@
 ;; Keywords: startup, screen, tools, dashboard
 
 
-
 ;; This file is NOT part of GNU Emacs.
-
 
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -33,9 +31,6 @@
 ;; A very minimal dashboard plugin for Emacs — displays a centered
 ;; image and message when Emacs starts, with optional window resize
 ;; responsiveness and layout control.
-
-
-
 
 ;;;; Group
 
@@ -83,10 +78,9 @@
   "Setter for use with `defcustom' for updating the cached image."
   (setq minimal-dashboard--cached-image
         (if (functionp minimal-dashboard-image-path)
-            (let ((path (funcall minimal-dashboard-image-path)))
-              (when path
+            (when-let* (path (funcall minimal-dashboard-image-path))
                 (create-image path)))
-          (create-image minimal-dashboard-image-path))))
+          (create-image minimal-dashboard-image-path)))
 
 (defun minimal-dashboard--refresh-cached-text ()
   "Setter for use with `defcustom' for updating the cached text."
