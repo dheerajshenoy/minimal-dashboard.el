@@ -234,16 +234,16 @@ Example usage:
                 (funcall minimal-dashboard-text)
               minimal-dashboard-text))))
 
-(defun minimal-dashboard--on-resize (frame)
-  "Function that is called when buffer is resized.
-Argument FRAME the dashboard frame."
-  (dolist (window (window-list frame))
-    (let ((buf (window-buffer window)))
-      (when (buffer-local-value 'minimal-dashboard--buffer-p buf)
-        (with-selected-window window
-          (let ((inhibit-read-only t))
-            (erase-buffer)
-            (minimal-dashboard--insert-centered-info)))))))
+(defun minimal-dashboard--on-resize (&optional frame)
+  "Called when window showing dashboard buffer is resized.
+FRAME is optional and provided by `window-size-change-functions'."
+  (when-let* ((buf (get-buffer minimal-dashboard-buffer-name))
+              (win (get-buffer-window buf)))
+    (when (window-live-p win)
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (minimal-dashboard--insert-centered-info))))))
 
 (defun minimal-dashboard--insert-centered-info ()
   "Insert a centered image and text in the dashboard buffer efficiently."
