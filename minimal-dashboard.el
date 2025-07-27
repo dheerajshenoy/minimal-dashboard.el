@@ -1,6 +1,6 @@
 ;;; minimal-dashboard.el --- A very minimal dashboard plugin -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2025 Free Software Foundation, Inc.
+;; Copyright (C) 2025 Dheeraj Vittal Shenoy
 
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
