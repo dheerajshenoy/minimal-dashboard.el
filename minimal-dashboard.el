@@ -32,16 +32,18 @@
 ;; image and message when Emacs starts, with optional window resize
 ;; responsiveness and layout control.
 
+;;; Code:
+
 ;;;; Group
 
-;;; Code:
+
 
 ;;;###autoload
 (defgroup minimal-dashboard nil
   "Group for `minimal-dashboard'."
   :prefix "minimal-dashboard-"
   :group 'applications
-  :version "0.1")
+  :version "0.1.2")
 
 ;;;; Faces
 
