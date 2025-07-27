@@ -307,8 +307,7 @@ FRAME is optional and provided by `window-size-change-functions'."
         (minimal-dashboard--insert-centered-info)
         (unless minimal-dashboard-modeline-shown
           (setq-local mode-line-format nil))
-        (setq-local cursor-type nil
-                    minimal-dashboard--buffer-p t)
+        (setq-local cursor-type nil)
         (setq buffer-read-only t)
         (use-local-map minimal-dashboard-mode-map)
         (minimal-dashboard--resize-handler))
