@@ -1,4 +1,4 @@
-;;; minimal-dashboard.el --- A very minimal dashboard plugin for emacs -*- lexical-binding: t; -*-
+;;; minimal-dashboard.el --- A very minimal dashboard plugin -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Free Software Foundation, Inc.
 
@@ -234,7 +234,7 @@ Example usage:
                 (funcall minimal-dashboard-text)
               minimal-dashboard-text))))
 
-(defun minimal-dashboard--on-resize (&optional frame)
+(defun minimal-dashboard--on-resize (&optional _frame)
   "Called when window showing dashboard buffer is resized.
 FRAME is optional and provided by `window-size-change-functions'."
   (when-let* ((buf (get-buffer minimal-dashboard-buffer-name))
