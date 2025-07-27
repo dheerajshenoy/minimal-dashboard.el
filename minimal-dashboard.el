@@ -92,21 +92,17 @@
           minimal-dashboard-text)))
 
 (defun minimal-dashboard--resize-handler ()
-  "Resizing updating handler."
-  (if minimal-dashboard-enable-resize-handling
+  "Resizing updating handler for defcustom setter.
 
-      ;; Enable
-      (unless (member #'minimal-dashboard--on-resize window-size-change-functions)
-        (add-hook 'window-size-change-functions #'minimal-dashboard--on-resize)
-
-        ;; Disable ok kill
-        (add-hook 'kill-buffer-hook
-                  (lambda ()
-                    (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize))
-                  nil t))
-
-    ;; Disable
-    (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize)))
+This is called when the custom variable
+`minimal-dashboard-enable-resize-handling' changes."
+  (when minimal-dashboard-enable-resize-handling
+    ;; Make the hook buffer-local to this buffer only
+    (make-local-variable 'window-size-change-functions)
+    (add-hook 'window-size-change-functions
+              #'minimal-dashboard--on-resize)
+    ;; Clean up when buffer is killed
+    (remove-hook 'kill-buffer-hook #'minimal-dashboard--on-resize t)))
 
 (defun minimal-dashboard--refresh-buffer-name ()
   "Set the dashboard name."
