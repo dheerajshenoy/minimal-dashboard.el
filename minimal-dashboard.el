@@ -301,7 +301,8 @@ FRAME is optional and provided by `window-size-change-functions'."
   (let ((buf (get-buffer-create (minimal-dashboard--refresh-buffer-name))))
     (delete-other-windows)
     (with-current-buffer buf
-      (let ((inhibit-read-only t)
+      (let ((display-line-numbers-mode nil)
+            (inhibit-read-only t)
             (view-read-only nil))
         (erase-buffer)
         (minimal-dashboard--insert-centered-info)
