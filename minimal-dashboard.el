@@ -247,7 +247,8 @@ FRAME is optional and provided by `window-size-change-functions'."
 
 (defun minimal-dashboard--insert-centered-info ()
   "Insert a centered image and text in the dashboard buffer efficiently."
-  (let* ((image (minimal-dashboard--get-cached-image))
+  (let* ((image (when (display-images-p)
+                  (minimal-dashboard--get-cached-image)))
          (image-size (if image (image-size image) '(0 . 0)))
          (img-width (car image-size))
          (img-height (cdr image-size))
