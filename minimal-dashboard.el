@@ -5,7 +5,7 @@
 ;; Author: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; Maintainer: Dheeraj Vittal Shenoy <dheerajshenoy22@gmail.com>
 ;; URL: https://github.com/dheerajshenoy/minimal-dashboard.el
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: startup, screen, tools, dashboard
 
@@ -63,6 +63,7 @@
 ;;;; Forward declaration of variable
 
 (defvar minimal-dashboard-image-path)
+(defvar minimal-dashboard-image-scale)
 (defvar minimal-dashboard-dashboard-text)
 (defvar minimal-dashboard--cached-image)
 (defvar minimal-dashboard--cached-text)
@@ -81,8 +82,8 @@
   (setq minimal-dashboard--cached-image
         (if (functionp minimal-dashboard-image-path)
             (when-let* ((path (funcall minimal-dashboard-image-path)))
-              (create-image path))
-          (create-image minimal-dashboard-image-path))))
+              (create-image path 'svg nil :scale minimal-dashboard-image-scale))
+          (create-image minimal-dashboard-image-path 'svg nil :scale minimal-dashboard-image-scale))))
 
 (defun minimal-dashboard--refresh-cached-text ()
   "Setter for use with `defcustom' for updating the cached text."
@@ -142,6 +143,8 @@ This is called when the custom variable
          (set-default symbol value)
          (minimal-dashboard--resize-handler)))
 
+
+
 (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
@@ -149,6 +152,14 @@ By default we use the splash Emacs image. If nil, no image is displayed."
   :type '(choice
           (string :tag "Path to image")
           (function :tag "Function returning a path to an image"))
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (minimal-dashboard--refresh-cached-image)))
+
+(defcustom minimal-dashboard-image-scale 1.0
+  "Scale of the dashboard image."
+  :type 'float
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
@@ -224,7 +235,7 @@ Example usage:
       (when (and minimal-dashboard-image-path
                  (stringp minimal-dashboard-image-path))
         (setq minimal-dashboard--cached-image
-              (create-image minimal-dashboard-image-path)))))
+              (create-image minimal-dashboard-image-path 'svg nil :scale minimal-dashboard-image-scale)))))
 
 (defun minimal-dashboard--get-cached-text ()
   "Return the cached text, or create and cache it if it doesn't exist."

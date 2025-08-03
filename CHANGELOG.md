@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.3
+
+- User option to customize the scale of the dashboard image
+
 ## 0.1.2
 
 - Allow function/string for image-path

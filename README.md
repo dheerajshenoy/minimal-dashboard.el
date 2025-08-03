@@ -7,7 +7,7 @@ responsiveness and layout control.
 The use case is for those who do not want to see anything else on the
 screen apart from the emacs logo and/or a small text blurb.
 
-Version: 0.1.2
+Version: 0.1.3
 
 ![screenshot](screenshot.png)
 
