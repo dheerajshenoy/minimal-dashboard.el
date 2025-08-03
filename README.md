@@ -68,7 +68,7 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
     ;;       ('mouse-1 (message "Left click on text"))
     ;;       ('mouse-2 (message "Middle click on text"))
     ;;       ('mouse-3 (message "Right click on text")))))
-
+    (minimal-dashboard-image-scale 1.25)
     (minimal-dashboard-enable-resize-handling t) ;; to refresh when buffer is resized
     (minimal-dashboard-modeline-shown nil)) ;; visibility of the modeline
 ```
@@ -90,7 +90,8 @@ Following customizable variables are present:
 - `minimal-dashboard-image-path` - path to the image to display (SVG, PNG, etc).
 - `minimal-dashboard-text` - text displayed below the image.
 - `minimal-dashboard-enable-resize-handling` -  re-center layout on window resize.
-- `minimal-dashboard-modeline-shown` - visibility of the modeline
+- `minimal-dashboard-modeline-shown` - visibility of the modeline.
+- `minimal-dashboard-image-scale` - scale of the dashboard image.
 
 Use `M-x customize-group RET minimal-dashboard RET` to configure interactively.
 
@@ -101,6 +102,7 @@ There's only one keybinding and that is `q` to quit the dashboard buffer.
 ## Why ?
 
 Wanted to learn elisp and wanted a clean and minimal dashboard during startup :)
+
 ## CHANGELOG
 
 Check [CHANGELOG](./CHANGELOG.md)
