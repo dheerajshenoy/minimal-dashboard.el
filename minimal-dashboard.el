@@ -62,8 +62,8 @@
 
 ;;;; Forward declaration of variable
 
-(defvar minimal-dashboard-image-path)
-(defvar minimal-dashboard-image-scale)
+(defvar minimal-dashboard-image-scale 1.0)
+(defvar minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory))
 (defvar minimal-dashboard-dashboard-text)
 (defvar minimal-dashboard--cached-image)
 (defvar minimal-dashboard--cached-text)
@@ -125,6 +125,14 @@ This is called when the custom variable
 
 ;;;; Variables
 
+(defcustom minimal-dashboard-image-scale 1.0
+  "Scale of the dashboard image."
+  :type 'float
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (minimal-dashboard--refresh-cached-image)))
+
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
   "Name of the `minimal-dashboard' buffer."
   :type '(choice
@@ -143,8 +151,6 @@ This is called when the custom variable
          (set-default symbol value)
          (minimal-dashboard--resize-handler)))
 
-
-
 (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
   "Path to the image that is displayed in the dashboard.
 
@@ -157,13 +163,7 @@ By default we use the splash Emacs image. If nil, no image is displayed."
          (set-default symbol value)
          (minimal-dashboard--refresh-cached-image)))
 
-(defcustom minimal-dashboard-image-scale 1.0
-  "Scale of the dashboard image."
-  :type 'float
-  :group 'minimal-dashboard
-  :set (lambda (symbol value)
-         (set-default symbol value)
-         (minimal-dashboard--refresh-cached-image)))
+
 
 (defcustom minimal-dashboard-modeline-shown nil
   "Visibility of the mode-line in the dashboard buffer."
