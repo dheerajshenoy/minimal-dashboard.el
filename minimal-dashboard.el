@@ -34,7 +34,7 @@
 
 ;;; Code:
 
-;;;; Group
+;;; Group
 
 
 
@@ -45,22 +45,20 @@
   :group 'applications
   :version "0.1.2")
 
-;;;; Faces
+;;; Faces
 
 (defface minimal-dashboard-text-face
   '((t :inherit shadow))
   "Face used for dashboard text."
   :group 'minimal-dashboard)
 
-;;;; Keymaps
+;;; Keymaps
 
 (defvar minimal-dashboard-mode-map
   (let ((map (make-sparse-keymap)))
     (keymap-set map "q" #'kill-current-buffer)
     map)
   "Keymap for `minimal-dashboard' buffer.")
-
-;;;; Forward declaration of variable
 
 (defvar minimal-dashboard-image-scale 1.0)
 (defvar minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory))
@@ -71,11 +69,11 @@
 (defvar minimal-dashboard-buffer-name)
 (defvar minimal-dashboard-text)
 
-;;;; Variable setters
+;;; Variable setters
 
-;;; These functions serve dual purpose and avoid redundancy. These are
-;;; called when creating the dashboard and are also used to update and
-;;; refresh the behavior when setting a config option.
+; These functions serve dual purpose and avoid redundancy. These are
+; called when creating the dashboard and are also used to update and
+; refresh the behavior when setting a config option.
 
 (defun minimal-dashboard--refresh-cached-image ()
   "Setter for use with `defcustom' for updating the cached image."
@@ -123,7 +121,7 @@ This is called when the custom variable
                        (funcall ,handler event))))
       map)))
 
-;;;; Variables
+;;; Variables
 
 (defcustom minimal-dashboard-image-scale 1.0
   "Scale of the dashboard image."
@@ -219,7 +217,7 @@ Example usage:
   :type 'function
   :group 'minimal-dashboard)
 
-;;;; Variables
+;;; Variables
 
 (defvar minimal-dashboard--cached-image nil
   "Cached `minimal-dashboard' image.")
@@ -227,7 +225,7 @@ Example usage:
 (defvar minimal-dashboard--cached-text nil
   "Cached `minimal-dashboard' text.")
 
-;;;; Helper functions
+;;; Helper functions
 
 (defun minimal-dashboard--get-cached-image ()
   "Return the cached image, or create and cache it if it doesn't exist."
@@ -304,7 +302,7 @@ FRAME is optional and provided by `window-size-change-functions'."
             (insert "\n"))))))
   (goto-char (point-min)))
 
-;;;; Main point of entry
+;;; Main point of entry
 
 ;;;###autoload
 (defun minimal-dashboard ()
