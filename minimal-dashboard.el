@@ -80,8 +80,8 @@
   (setq minimal-dashboard--cached-image
         (if (functionp minimal-dashboard-image-path)
             (when-let* ((path (funcall minimal-dashboard-image-path)))
-              (create-image path 'svg nil :scale minimal-dashboard-image-scale))
-          (create-image minimal-dashboard-image-path 'svg nil :scale minimal-dashboard-image-scale))))
+              (create-image path nil nil :scale minimal-dashboard-image-scale))
+          (create-image minimal-dashboard-image-path nil nil :scale minimal-dashboard-image-scale))))
 
 (defun minimal-dashboard--refresh-cached-text ()
   "Setter for use with `defcustom' for updating the cached text."
@@ -233,7 +233,7 @@ Example usage:
       (when (and minimal-dashboard-image-path
                  (stringp minimal-dashboard-image-path))
         (setq minimal-dashboard--cached-image
-              (create-image minimal-dashboard-image-path 'svg nil :scale minimal-dashboard-image-scale)))))
+              (create-image minimal-dashboard-image-path nil nil :scale minimal-dashboard-image-scale)))))
 
 (defun minimal-dashboard--get-cached-text ()
   "Return the cached text, or create and cache it if it doesn't exist."
