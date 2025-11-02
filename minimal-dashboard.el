@@ -70,6 +70,8 @@
 (defvar minimal-dashboard-enable-resize-handling)
 (defvar minimal-dashboard-buffer-name)
 (defvar minimal-dashboard-text)
+(defvar minimal-dashboard-mode-hook nil
+  "Hook run after the dashboard is created.")
 
 ;;; Variable setters
 
@@ -347,6 +349,7 @@ FRAME is optional and provided by `window-size-change-functions'."
   (let ((buf (get-buffer-create (minimal-dashboard--refresh-buffer-name))))
     (delete-other-windows)
     (with-current-buffer buf
+      (run-hooks 'minimal-dashboard-mode-hook)
       (let ((inhibit-read-only t)
             (view-read-only nil))
         (erase-buffer)
