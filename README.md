@@ -35,6 +35,7 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 (use-package minimal-dashboard
     :vc (minimal-dashboard :url "https://github.com/dheerajshenoy/minimal-dashboard.el")
     ;; :load-path "<path-to-cloned-directory>" ;; uncomment this line if you have downloaded and don't want to use VC
+    :hook (minimal-dashboard-mode-hook . (display-line-numbers-mode 0))
     :init
     (setq initial-buffer-choice #'minimal-dashboard) ;; set initial buffer as dashboard
     :custom
@@ -75,6 +76,7 @@ git clone https://github.com/dheerajshenoy/minimal-dashboard.el
 
 > [!NOTE]
 > By default, the image used is the splash screen image and the default text is "Welcome to Emacs"
+> Also, if you have line numbers enabled globally, then you can add a function to disable line numbers on `minimal-dashboard-hook`
 
 ## Note
 
