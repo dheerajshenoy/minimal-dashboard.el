@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.1.4
+
+- Update the resizing gif in README
+- Add note about package installation in README from MELPA
+
 ## 0.1.3
 
 - User option to customize the scale of the dashboard image
