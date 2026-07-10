@@ -23,23 +23,24 @@ Respects window resizing
 
 ## Installation
 
-1. Clone this repository somewhere inside your Emacs `load-path`:
+minimal-dashboard is available on MELPA. You can install it using `M-x package-install RET minimal-dashboard RET`.
 
-```sh
-git clone https://github.com/dheerajshenoy/minimal-dashboard.el
-```
-
-2. Use VC or download and require manually
+Or you can use `use-package` to install it from MELPA or from the GitHub repository.
 
 ```elisp
 (use-package minimal-dashboard
-    :vc (minimal-dashboard :url "https://github.com/dheerajshenoy/minimal-dashboard.el")
-    ;; :load-path "<path-to-cloned-directory>" ;; uncomment this line if you have downloaded and don't want to use VC
-    :hook (minimal-dashboard-mode-hook . (display-line-numbers-mode 0))
+    :ensure t
+    :init
+    (setq initial-buffer-choice #'minimal-dashboard)) ;; set initial buffer as dashboard
+```
+
+## Configuration
+
+```elisp
+(use-package minimal-dashboard
     :init
     (setq initial-buffer-choice #'minimal-dashboard) ;; set initial buffer as dashboard
     :custom
-
     (minimal-dashboard-buffer-name "Dashboard")
     ;; (minimal-dashboard-buffer-name #'some-func-that-returns-a-string)
 
