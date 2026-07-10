@@ -34,10 +34,6 @@
 
 ;;; Code:
 
-;;; Group
-
-
-
 ;;;###autoload
 (defgroup minimal-dashboard nil
   "Group for `minimal-dashboard'."
@@ -60,80 +56,81 @@
     map)
   "Keymap for `minimal-dashboard' buffer.")
 
-(defvar minimal-dashboard-image-scale 1.0)
-(defvar minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory))
-(defvar minimal-dashboard-dashboard-text)
-(defvar minimal-dashboard--cached-image)
-(defvar minimal-dashboard--cached-text)
+;;; Internal state
+
+(defvar minimal-dashboard--cached-image nil
+  "Cached `minimal-dashboard' image.")
+
 (defvar minimal-dashboard--cached-image-path nil
-  "Stores the file path of the currently cached dashboard image.")
-(defvar minimal-dashboard-enable-resize-handling)
-(defvar minimal-dashboard-buffer-name)
-(defvar minimal-dashboard-text)
+  "File path of the currently cached dashboard image.")
+
+(defvar minimal-dashboard--cached-image-size nil
+  "Pixel size of the cached image as (WIDTH . HEIGHT).")
+
+(defvar minimal-dashboard--cached-text nil
+  "Cached `minimal-dashboard' text.")
+
+(defvar minimal-dashboard--resolved-buffer-name nil
+  "Resolved name of the dashboard buffer.")
+
+(defvar minimal-dashboard--image-mouse-map nil
+  "Cached keymap for dashboard image mouse clicks.")
+
+(defvar minimal-dashboard--text-mouse-map nil
+  "Cached keymap for dashboard text mouse clicks.")
+
 (defvar minimal-dashboard-mode-hook nil
-  "Hook run after the dashboard is created.")
+  "Hook run after the dashboard buffer is fully set up.")
 
-;;; Variable setters
+;;; Mouse map builder
 
-; These functions serve dual purpose and avoid redundancy. These are
-; called when creating the dashboard and are also used to update and
-; refresh the behavior when setting a config option.
+(defun minimal-dashboard--build-mouse-map (handler)
+  "Return a keymap bound to all three mouse buttons calling HANDLER, or nil."
+  (when handler
+    (let ((map (make-sparse-keymap)))
+      (dolist (btn '(mouse-1 mouse-2 mouse-3))
+        (define-key map (vector btn)
+                    (lambda (event)
+                      (interactive "e")
+                      (funcall handler event))))
+      map)))
+
+;;; Setter helpers
+;; These are called on dashboard creation and by defcustom :set functions.
 
 (defun minimal-dashboard--refresh-cached-image ()
-  "Setter for use with `defcustom' for updating the cached image."
-  (setq minimal-dashboard--cached-image
-        (if (functionp minimal-dashboard-image-path)
-            (when-let* ((path (funcall minimal-dashboard-image-path)))
-              (create-image path nil nil :scale minimal-dashboard-image-scale))
-          (create-image minimal-dashboard-image-path nil nil :scale minimal-dashboard-image-scale))))
+  "Invalidate the cached image so it is rebuilt on the next render."
+  (setq minimal-dashboard--cached-image nil
+        minimal-dashboard--cached-image-path nil
+        minimal-dashboard--cached-image-size nil))
 
 (defun minimal-dashboard--refresh-cached-text ()
-  "Setter for use with `defcustom' for updating the cached text."
+  "Rebuild the cached dashboard text."
   (setq minimal-dashboard--cached-text
         (if (functionp minimal-dashboard-text)
             (funcall minimal-dashboard-text)
           minimal-dashboard-text)))
 
-(defun minimal-dashboard--resize-handler ()
-  "Resizing updating handler for defcustom setter.
-
-This is called when the custom variable
-`minimal-dashboard-enable-resize-handling' changes."
-  (when minimal-dashboard-enable-resize-handling
-    ;; Make the hook buffer-local to this buffer only
-    (make-local-variable 'window-size-change-functions)
-    (add-hook 'window-size-change-functions
-              #'minimal-dashboard--on-resize)
-    ;; Clean up when buffer is killed
-    (remove-hook 'kill-buffer-hook #'minimal-dashboard--on-resize t)))
-
 (defun minimal-dashboard--refresh-buffer-name ()
-  "Set the dashboard name."
-  (setq minimal-dashboard-buffer-name
+  "Resolve and return the dashboard buffer name, caching it in an internal var."
+  (setq minimal-dashboard--resolved-buffer-name
         (if (functionp minimal-dashboard-buffer-name)
             (funcall minimal-dashboard-buffer-name)
           minimal-dashboard-buffer-name)))
 
-(defun minimal-dashboard--build-mouse-map (handler)
-  "Return a keymap for mouse buttons if HANDLER is non-nil."
-  (when handler
-    (let ((map (make-sparse-keymap)))
-      (dolist (btn '(mouse-1 mouse-2 mouse-3))
-        (define-key map (vector btn)
-                    `(lambda (event)
-                       (interactive "e")
-                       (funcall ,handler event))))
-      map)))
+(defun minimal-dashboard--resize-handler ()
+  "Set up or tear down resize handling for the current buffer."
+  (if minimal-dashboard-enable-resize-handling
+      (progn
+        (add-hook 'window-size-change-functions #'minimal-dashboard--on-resize nil t)
+        (add-hook 'kill-buffer-hook
+                  (lambda ()
+                    (remove-hook 'window-size-change-functions
+                                 #'minimal-dashboard--on-resize t))
+                  nil t))
+    (remove-hook 'window-size-change-functions #'minimal-dashboard--on-resize t)))
 
-;;; Variables
-
-;; (defcustom minimal-dashboard-image-scale 1.0
-;;   "Scale of the dashboard image."
-;;   :type 'float
-;;   :group 'minimal-dashboard
-;;   :set (lambda (symbol value)
-;;          (set-default symbol value)
-;;          (minimal-dashboard--refresh-cached-image)))
+;;; Custom variables
 
 (defcustom minimal-dashboard-image-scale 1.0
   "Scale of the dashboard image."
@@ -141,13 +138,15 @@ This is called when the custom variable
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-image nil))) ;; invalidate cache
+         (minimal-dashboard--refresh-cached-image)))
 
 (defcustom minimal-dashboard-buffer-name "*My Dashboard*"
-  "Name of the `minimal-dashboard' buffer."
+  "Name of the `minimal-dashboard' buffer.
+
+Can be a string or a function returning a string."
   :type '(choice
-          (string :tag "Path to image")
-          (function :tag "Function returning a path to an image"))
+          (string :tag "Buffer name")
+          (function :tag "Function returning a buffer name"))
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
@@ -159,19 +158,10 @@ This is called when the custom variable
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (minimal-dashboard--resize-handler)))
-
-;; (defcustom minimal-dashboard-image-path (expand-file-name "images/splash.svg" data-directory)
-;;   "Path to the image that is displayed in the dashboard.
-;;
-;; By default we use the splash Emacs image. If nil, no image is displayed."
-;;   :type '(choice
-;;           (string :tag "Path to image")
-;;           (function :tag "Function returning a path to an image"))
-;;   :group 'minimal-dashboard
-;;   :set (lambda (symbol value)
-;;          (set-default symbol value)
-;;          (minimal-dashboard--refresh-cached-image)))
+         (when-let* ((name minimal-dashboard--resolved-buffer-name)
+                     (buf (get-buffer name)))
+           (with-current-buffer buf
+             (minimal-dashboard--resize-handler)))))
 
 (defcustom minimal-dashboard-image-path
   (expand-file-name "images/splash.svg" data-directory)
@@ -185,8 +175,7 @@ If nil, no image is shown."
   :group 'minimal-dashboard
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq minimal-dashboard--cached-image nil))) ;; invalidate cache
-
+         (minimal-dashboard--refresh-cached-image)))
 
 (defcustom minimal-dashboard-modeline-shown nil
   "Visibility of the mode-line in the dashboard buffer."
@@ -209,72 +198,63 @@ If it's a function, it should return a string."
 (defcustom minimal-dashboard-image-click-handler nil
   "Function to call when the dashboard image is clicked.
 
-Supports `mouse-1` (left button), `mouse-2` (middle button) and
-`mouse-3` (right button). The function is called with the event
-argument.
+Supports `mouse-1' (left), `mouse-2' (middle), and `mouse-3' (right).
+The function receives the mouse event as its argument.
 
-Example usage:
+Example:
 
 \(setq `minimal-dashboard-image-click-handler'
       (lambda (event)
         (pcase (event-basic-type event)
-          (`mouse-1 function1)
-          (`mouse-2 function2)
-          (`mouse-3 function3))))"
-  :type 'function
-  :group 'minimal-dashboard)
+          (`mouse-1 (function1))
+          (`mouse-2 (function2))
+          (`mouse-3 (function3)))))"
+  :type '(choice (const nil) function)
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (setq minimal-dashboard--image-mouse-map
+               (minimal-dashboard--build-mouse-map value))))
 
 (defcustom minimal-dashboard-text-click-handler nil
-  "Function to call when the dashboard image is clicked.
+  "Function to call when the dashboard text is clicked.
 
-Supports `mouse-1` (left button), `mouse-2` (middle button) and
-`mouse-3` (right button). The function is called with the event
-argument.
+Supports `mouse-1' (left), `mouse-2' (middle), and `mouse-3' (right).
+The function receives the mouse event as its argument.
 
-Example usage:
+Example:
 
 \(setq `minimal-dashboard-text-click-handler'
       (lambda (event)
         (pcase (event-basic-type event)
-          (`mouse-1 function1)
-          (`mouse-2 function2)
-          (`mouse-3 function3))))"
-  :type 'function
-  :group 'minimal-dashboard)
+          (`mouse-1 (function1))
+          (`mouse-2 (function2))
+          (`mouse-3 (function3)))))"
+  :type '(choice (const nil) function)
+  :group 'minimal-dashboard
+  :set (lambda (symbol value)
+         (set-default symbol value)
+         (setq minimal-dashboard--text-mouse-map
+               (minimal-dashboard--build-mouse-map value))))
 
-;;; Variables
-
-(defvar minimal-dashboard--cached-image nil
-  "Cached `minimal-dashboard' image.")
-
-(defvar minimal-dashboard--cached-text nil
-  "Cached `minimal-dashboard' text.")
-
-;;; Helper functions
-
-;; (defun minimal-dashboard--get-cached-image ()
-;;   "Return the cached image, or create and cache it if it doesn't exist."
-;;   (or minimal-dashboard--cached-image
-;;       (when (and minimal-dashboard-image-path
-;;                  (stringp minimal-dashboard-image-path))
-;;         (setq minimal-dashboard--cached-image
-;;               (create-image minimal-dashboard-image-path nil nil :scale minimal-dashboard-image-scale)))))
+;;; Core functions
 
 (defun minimal-dashboard--get-cached-image ()
-  "Return the cached dashboard image, refreshing it if needed."
+  "Return the cached dashboard image, rebuilding it if the path changed."
   (let ((path (if (functionp minimal-dashboard-image-path)
                   (funcall minimal-dashboard-image-path)
                 minimal-dashboard-image-path)))
     (when (and path (file-exists-p path))
       (unless (and minimal-dashboard--cached-image
                    (equal path minimal-dashboard--cached-image-path))
-        (setq minimal-dashboard--cached-image
-              (create-image path nil nil :scale minimal-dashboard-image-scale)
-              minimal-dashboard--cached-image-path path)))
+        (let ((img (create-image path nil nil :scale minimal-dashboard-image-scale)))
+          (setq minimal-dashboard--cached-image img
+                minimal-dashboard--cached-image-path path
+                minimal-dashboard--cached-image-size (image-size img)))))
     minimal-dashboard--cached-image))
 
 (defun minimal-dashboard--get-cached-text ()
-  "Return the cached text, or create and cache it if it doesn't exist."
+  "Return the cached text, computing and caching it if needed."
   (or minimal-dashboard--cached-text
       (setq minimal-dashboard--cached-text
             (if (functionp minimal-dashboard-text)
@@ -282,9 +262,9 @@ Example usage:
               minimal-dashboard-text))))
 
 (defun minimal-dashboard--on-resize (&optional _frame)
-  "Called when window showing dashboard buffer is resized.
-FRAME is optional and provided by `window-size-change-functions'."
-  (when-let* ((buf (get-buffer minimal-dashboard-buffer-name))
+  "Redraw the dashboard when its window is resized."
+  (when-let* ((name minimal-dashboard--resolved-buffer-name)
+              (buf (get-buffer name))
               (win (get-buffer-window buf)))
     (when (window-live-p win)
       (with-current-buffer buf
@@ -293,63 +273,51 @@ FRAME is optional and provided by `window-size-change-functions'."
           (minimal-dashboard--insert-centered-info))))))
 
 (defun minimal-dashboard--insert-centered-info ()
-  "Insert a centered image and text in the dashboard buffer efficiently."
+  "Insert a centered image and text in the dashboard buffer."
   (let* ((image (when (display-images-p)
                   (minimal-dashboard--get-cached-image)))
-         (image-size (if image (image-size image) '(0 . 0)))
+         (image-size (or minimal-dashboard--cached-image-size '(0 . 0)))
          (img-width (car image-size))
          (img-height (cdr image-size))
          (text (minimal-dashboard--get-cached-text))
          (text-lines (when (stringp text) (split-string text "\n")))
          (win-h (window-height))
-         (win-w (window-width)))
+         (win-w (window-width))
+         (vpad (max 0 (round (- win-h img-height (if text-lines 2 0)) 2)))
+         (hpad-img (max 0 (round (- win-w img-width) 2))))
 
-    (let* ((vpad (max 0 (round (- win-h img-height (if text-lines 2 0)) 2)))
-           (hpad-img (max 0 (round (- win-w img-width) 2))))
+    (insert-char ?\n vpad)
 
-      ;; Vertical padding before image/text
-      (insert-char ?\n vpad)
+    (when image
+      (insert-char ?\s hpad-img)
+      (if minimal-dashboard--image-mouse-map
+          (insert (propertize " " 'display image
+                              'mouse-face 'highlight
+                              'keymap minimal-dashboard--image-mouse-map))
+        (insert-image image))
+      (insert "\n\n"))
 
-      ;; Insert image if available
-      (when image
-        (insert-char ?\s hpad-img)
-        (if minimal-dashboard-image-click-handler
-            (insert (propertize " " 'display image
-                                'mouse-face 'highlight
-                                'keymap
-                                (minimal-dashboard--build-mouse-map
-                                 minimal-dashboard-image-click-handler)))
-          (insert-image image))
-        (insert "\n\n"))
+    (when text-lines
+      (dolist (line text-lines)
+        (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
+        (let ((props (list 'face 'minimal-dashboard-text-face)))
+          (when minimal-dashboard--text-mouse-map
+            (setq props (append props (list 'mouse-face 'highlight
+                                            'keymap minimal-dashboard--text-mouse-map))))
+          (insert (apply #'propertize line props)))
+        (insert "\n"))))
 
-      ;; Insert text lines if available
-      (when text-lines
-        (if minimal-dashboard-text-click-handler
-            (dolist (line text-lines)
-              (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
-              (insert (propertize " " 'display line
-                                  'face 'minimal-dashboard-text
-                                  'mouse-face 'highlight
-                                  'keymap
-                                  (minimal-dashboard--build-mouse-map
-                                   minimal-dashboard-text-click-handler)))
-              (insert "\n"))
-          (dolist (line text-lines)
-            (insert-char ?\s (max 0 (round (- win-w (string-width line)) 2)))
-            (insert (propertize line 'face 'minimal-dashboard-text-face))
-            (insert "\n"))))))
   (goto-char (point-min)))
 
-;;; Main point of entry
+;;; Entry point
 
 ;;;###autoload
 (defun minimal-dashboard ()
-  "Show dashboard with image, set up hooks."
+  "Show the minimal dashboard buffer."
   (interactive)
   (let ((buf (get-buffer-create (minimal-dashboard--refresh-buffer-name))))
     (delete-other-windows)
     (with-current-buffer buf
-      (run-hooks 'minimal-dashboard-mode-hook)
       (let ((inhibit-read-only t)
             (view-read-only nil))
         (erase-buffer)
@@ -360,8 +328,9 @@ FRAME is optional and provided by `window-size-change-functions'."
         (setq buffer-read-only t)
         (use-local-map minimal-dashboard-mode-map)
         (minimal-dashboard--resize-handler))
-    (switch-to-buffer buf)
-    buf)))
+      (run-hooks 'minimal-dashboard-mode-hook)
+      (switch-to-buffer buf)
+      buf)))
 
 (provide 'minimal-dashboard)
 
