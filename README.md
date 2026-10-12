@@ -1,5 +1,7 @@
 # minimal-dashboard.el
 
+<a href="https://melpa.org/#/minimal-dashboard"><img alt="MELPA" src="https://melpa.org/packages/minimal-dashboard-badge.svg"/></a>
+
 A very minimal dashboard plugin for Emacs — displays a centered image
 and message when Emacs starts, with optional window resize
 responsiveness and layout control.
